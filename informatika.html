@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Расписание информатики</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #eef1f6;
+    --surface: #ffffff;
+    --ink: #1b2236;
+    --muted: #6a7389;
+    --line: #dde2ec;
+    --school: #17744a;
+    --school-tint: #e1f3e9;
+    --remote: #4547b0;
+    --remote-tint: #e7e8fb;
+    --accent: #1b2236;
+    --accent-ink: #ffffff;
+    --now: #d9480f;
+    --async: #8a5300;
+    --async-tint: #fdf0d3;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #12161f;
+      --surface: #1b2130;
+      --ink: #eef1f8;
+      --muted: #99a2b8;
+      --line: #2c3448;
+      --school: #5fd39b;
+      --school-tint: #173a2b;
+      --remote: #a3a6f5;
+      --remote-tint: #25274d;
+      --accent: #eef1f8;
+      --accent-ink: #12161f;
+      --now: #ff9a5c;
+      --async: #f2b45c;
+      --async-tint: #3b2e12;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #12161f;
+    --surface: #1b2130;
+    --ink: #eef1f8;
+    --muted: #99a2b8;
+    --line: #2c3448;
+    --school: #5fd39b;
+    --school-tint: #173a2b;
+    --remote: #a3a6f5;
+    --remote-tint: #25274d;
+    --accent: #eef1f8;
+    --accent-ink: #12161f;
+    --now: #ff9a5c;
+    --async: #f2b45c;
+    --async-tint: #3b2e12;
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Golos Text", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.4;
+    font-variant-numeric: tabular-nums;
+    -webkit-text-size-adjust: 100%;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 20px 14px 40px; }
+
+  header h1 { margin: 0 0 4px; font-size: 1.6rem; font-weight: 800; letter-spacing: -0.02em; }
+  header p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+
+  .controls { margin: 18px 0 14px; display: grid; gap: 12px; }
+  .seg {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px; max-width: 460px;
+  }
+  .seg button {
+    font: inherit; font-weight: 700; font-size: 1rem; padding: 12px 10px; border: 0; border-radius: 10px;
+    background: transparent; color: var(--muted); cursor: pointer; min-height: 48px;
+  }
+  .seg button[aria-checked="true"] { background: var(--accent); color: var(--accent-ink); }
+  .seg button:focus-visible { outline: 3px solid var(--remote); outline-offset: 2px; }
+
+  .who { display: grid; gap: 8px; }
+  .who div { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 0.92rem; }
+  .who .lbl { font-weight: 700; margin-right: 4px; }
+  .chip { padding: 3px 10px; border-radius: 999px; font-weight: 700; font-size: 0.9rem; }
+  .chip.s { background: var(--school-tint); color: var(--school); }
+  .chip.r { background: var(--remote-tint); color: var(--remote); }
+
+  .days { display: grid; gap: 14px; grid-template-columns: 1fr; }
+  @media (min-width: 860px) { .wrap { padding-top: 32px; } }
+
+  .day { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+  .day.today { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+  .day h2 { margin: 0; }
+  .day-head {
+    width: 100%; font: inherit; color: inherit; text-align: left; background: transparent; border: 0; cursor: pointer;
+    padding: 14px; min-height: 64px; display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; align-items: center;
+  }
+  .day-head:focus-visible { outline: 3px solid var(--remote); outline-offset: -3px; }
+  .day-head .title { font-size: 1.15rem; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+  .day-head .tag { font-size: 0.75rem; font-weight: 700; background: var(--accent); color: var(--accent-ink); padding: 2px 8px; border-radius: 999px; }
+  .day-head .sum { grid-column: 1; font-size: 0.85rem; color: var(--muted); }
+  .day-head .chev { grid-column: 2; grid-row: 1 / span 2; width: 22px; height: 22px; transition: transform .15s; color: var(--muted); }
+  .day-head[aria-expanded="true"] .chev { transform: rotate(180deg); }
+  .day-head[aria-expanded="true"] { border-bottom: 1px solid var(--line); }
+  .day-body[hidden] { display: none; }
+  .row.a { border-left-color: var(--async); background: var(--async-tint); }
+  .row.a .mode { color: var(--async); }
+
+  .row {
+    display: grid; grid-template-columns: 54px 1fr; gap: 10px; align-items: center;
+    padding: 10px 14px; border-left: 5px solid transparent; border-bottom: 1px solid var(--line);
+  }
+  .row:last-child { border-bottom: 0; }
+  .row.s { border-left-color: var(--school); background: var(--school-tint); }
+  .row.r { border-left-color: var(--remote); background: var(--remote-tint); }
+  .row.now { outline: 3px solid var(--now); outline-offset: -3px; }
+  .num { font-weight: 800; font-size: 1.5rem; line-height: 1; }
+  .num small { display: block; font-size: 0.72rem; font-weight: 500; color: var(--muted); margin-top: 3px; letter-spacing: 0; }
+  .main { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 10px; }
+  .cls { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.01em; }
+  .mode { font-size: 0.85rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
+  .row.s .mode { color: var(--school); }
+  .row.r .mode { color: var(--remote); }
+  .mode svg { width: 18px; height: 18px; flex: none; }
+  .note { width: 100%; font-size: 0.78rem; color: var(--muted); }
+  .nowtag { font-size: 0.72rem; font-weight: 800; color: #fff; background: var(--now); padding: 1px 7px; border-radius: 999px; margin-left: 6px; vertical-align: middle; }
+
+  .gap { display: grid; grid-template-columns: 54px 1fr; gap: 10px; padding: 7px 14px; color: var(--muted); font-size: 0.82rem; border-bottom: 1px solid var(--line); background: repeating-linear-gradient(135deg, transparent 0 8px, color-mix(in srgb, var(--line) 55%, transparent) 8px 9px); }
+  .gap b { font-weight: 600; text-align: center; }
+  .empty { padding: 16px 14px; color: var(--muted); }
+
+  footer { margin-top: 22px; font-size: 0.85rem; color: var(--muted); max-width: 70ch; }
+  footer p { margin: 4px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Информатика: расписание</h1>
+  </header>
+
+  <div class="controls">
+    <div class="seg" role="radiogroup" aria-label="Неделя">
+      <button type="button" role="radio" data-week="num" aria-checked="true">Числитель</button>
+      <button type="button" role="radio" data-week="den" aria-checked="false">Знаменатель</button>
+    </div>
+    <div class="who" id="who" aria-live="polite"></div>
+  </div>
+
+  <main class="days" id="days"></main>
+
+</div>
+
+<script>
+(function () {
+  var TIMES = {
+    1: ["08:00", "08:40"], 2: ["08:50", "09:30"], 3: ["09:50", "10:30"], 4: ["10:50", "11:30"],
+    5: ["11:40", "12:20"], 6: ["12:40", "13:20"], 7: ["13:30", "14:10"]
+  };
+  var DAYS = [
+    { name: "Понедельник", lessons: { 1: "11-А", 2: "9-Б", 3: "10-В", 5: "10-Б", 7: "7-Д" } },
+    { name: "Вторник",     lessons: { 1: "9-Д", 3: "10-Д", 5: "10-В", 7: "9-А" } },
+    { name: "Среда",       lessons: { 2: "7-Д", 3: "10-А", 7: "9-Б" } },
+    { name: "Четверг",     lessons: { 1: "8-Д", 2: "9-А", 4: "10-Б" } },
+    { name: "Пятница",     lessons: { 1: "11-А", 2: "9-Д", 3: "11-Б", 4: "10-Д", 5: "10-А", 7: "8-Д" } }
+  ];
+
+  var SCHOOL_BY_WEEK = {
+    num: ["9-А", "11-А", "11-Б"],
+    den: ["9-Б", "10-А", "10-Б", "10-В"]
+  };
+  var ALWAYS_REMOTE = ["7-Д", "8-Д", "9-Д", "10-Д"];
+
+  var ICON_SCHOOL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10l9-6 9 6"/><path d="M5 10v9h14v-9"/><path d="M10 19v-5h4v5"/></svg>';
+  var ICON_ASYNC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>';
+  var ICON_REMOTE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>';
+
+  var week = "num";
+  try { var saved = localStorage.getItem("info-week"); if (saved === "num" || saved === "den") week = saved; } catch (e) {}
+
+  var openDays = {};
+  var initDone = false;
+  function isAsync(cls, n) { return isSchool(cls) && /^9-/.test(cls) && n >= 6; }
+  function isSchool(cls) { return SCHOOL_BY_WEEK[week].indexOf(cls) !== -1; }
+  function mins(t) { var p = t.split(":"); return +p[0] * 60 + +p[1]; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]; }); }
+
+  function render() {
+    var now = new Date();
+    var dow = now.getDay(); // 1..5
+    var nowMin = now.getHours() * 60 + now.getMinutes();
+
+    // who is where
+    var allClasses = {};
+    DAYS.forEach(function (d) { Object.keys(d.lessons).forEach(function (n) { allClasses[d.lessons[n]] = 1; }); });
+    function sortKey(c) { var m = c.match(/^(\d+)-(.)/); return +m[1] * 10 + m[2].charCodeAt(0) / 1000; }
+    var list = Object.keys(allClasses).sort(function (a, b) { return sortKey(a) - sortKey(b); });
+    var s = list.filter(isSchool), r = list.filter(function (c) { return !isSchool(c); });
+    document.getElementById("who").innerHTML =
+      '<div><span class="lbl">В школе:</span>' + s.map(function (c) { return '<span class="chip s">' + c + '</span>'; }).join("") + '</div>' +
+      '<div><span class="lbl">Дистанционно:</span>' + r.map(function (c) { return '<span class="chip r">' + c + '</span>'; }).join("") + '</div>';
+
+    var html = "";
+    DAYS.forEach(function (d, di) {
+      var nums = Object.keys(d.lessons).map(Number).sort(function (a, b) { return a - b; });
+      var school = 0, remote = 0, asyn = 0;
+      nums.forEach(function (n) {
+        if (isAsync(d.lessons[n], n)) asyn++;
+        else if (isSchool(d.lessons[n])) school++;
+        else remote++;
+      });
+      var isToday = dow === di + 1;
+      if (!initDone && isToday) openDays[di] = true;
+      var open = !!openDays[di];
+      var sum = [];
+      if (school) sum.push("в школе: " + school);
+      if (remote) sum.push("дистанционно: " + remote);
+      if (asyn) sum.push("асинхронно: " + asyn);
+
+      html += '<section class="day' + (isToday ? " today" : "") + '" aria-label="' + d.name + '">';
+      html += '<h2><button type="button" class="day-head" data-day="' + di + '" aria-expanded="' + open + '">' +
+              '<span class="title">' + d.name + (isToday ? '<span class="tag">сегодня</span>' : "") + '</span>' +
+              '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>' +
+              '<span class="sum">Уроков: ' + nums.length + (sum.length ? " · " + sum.join(", ") : "") + '</span></button></h2>' +
+              '<div class="day-body"' + (open ? "" : " hidden") + '>';
+
+      var first = nums[0], last = nums[nums.length - 1];
+      for (var n = first; n <= last; n++) {
+        var t = TIMES[n];
+        if (d.lessons[n]) {
+          var cls = d.lessons[n];
+          var sch = isSchool(cls);
+          var asy = isAsync(cls, n);
+          var live = !asy && isToday && nowMin >= mins(t[0]) && nowMin <= mins(t[1]);
+          html += '<div class="row ' + (asy ? "a" : sch ? "s" : "r") + (live ? " now" : "") + '">' +
+                  '<div class="num">' + n + '<small>' + t[0] + '–' + t[1] + '</small></div>' +
+                  '<div class="main"><span class="cls">' + esc(cls) + (live ? '<span class="nowtag">сейчас</span>' : "") + '</span>' +
+                  '<span class="mode">' + (asy ? ICON_ASYNC + "Асинхронно, только задание" : sch ? ICON_SCHOOL + "В школе" : ICON_REMOTE + "Дистанционно") + '</span>' +
+                  '</div></div>';
+        } else {
+          // collect consecutive gap
+          var end = n;
+          while (end + 1 < last && !d.lessons[end + 1]) end++;
+          var label = end === n ? n + "-й урок" : n + "–" + end + " уроки";
+          html += '<div class="gap"><b>окно</b><span>' + label + ', ' + TIMES[n][0] + '–' + TIMES[end][1] + '</span></div>';
+          n = end;
+        }
+      }
+      html += '</div></section>';
+    });
+    initDone = true;
+    document.getElementById("days").innerHTML = html;
+  }
+
+  function setWeek(w) {
+    week = w;
+    try { localStorage.setItem("info-week", w); } catch (e) {}
+    document.querySelectorAll(".seg button").forEach(function (b) {
+      b.setAttribute("aria-checked", b.getAttribute("data-week") === w ? "true" : "false");
+    });
+    render();
+  }
+
+  document.querySelectorAll(".seg button").forEach(function (b) {
+    b.addEventListener("click", function () { setWeek(b.getAttribute("data-week")); });
+  });
+  document.getElementById("days").addEventListener("click", function (e) {
+    var b = e.target.closest(".day-head");
+    if (!b) return;
+    var di = b.getAttribute("data-day");
+    openDays[di] = !openDays[di];
+    var open = !!openDays[di];
+    b.setAttribute("aria-expanded", open ? "true" : "false");
+    b.parentNode.nextElementSibling.hidden = !open;
+  });
+  setWeek(week);
+  setInterval(render, 60000);
+})();
+</script>
+</body>
+</html>
